@@ -2,7 +2,8 @@ name: Birthday Scheduler
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 5 * * *'
+    # GitHub Actions cron is UTC-based; 2:00 AM IST = 20:30 UTC the previous day
+    - cron: '30 20 * * *'
 jobs:
   run-worker:
     runs-on: ubuntu-latest
