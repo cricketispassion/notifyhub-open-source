@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+build/
+dist/
+.eggs/
+.eggs
+*.egg
+*.whl
+*.manifest
+*.spec
+
+# Virtual environments
+venv/
+.env
+.env.*
+.venv/
+
+# Pytest
+.pytest_cache/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Editor backups
+*~
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+*.tmp
