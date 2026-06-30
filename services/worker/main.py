@@ -51,11 +51,24 @@ def parse_birthday(value: str | None) -> date | None:
     value = value.strip()
     if not value:
         return None
+
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
         try:
             return datetime.strptime(value, fmt).date()
         except ValueError:
             continue
+
+    month_day_formats = ("%m-%d", "%m/%d", "%d.%m")
+    for fmt in month_day_formats:
+        try:
+            if fmt == "%d.%m":
+                normalized = f"1900-{value[3:5]}-{value[0:2]}"
+            else:
+                normalized = f"1900-{value.replace('/', '-') }"
+            return datetime.strptime(normalized, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
     return None
 
 

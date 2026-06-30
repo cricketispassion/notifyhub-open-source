@@ -6,7 +6,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from services.worker.main import load_config, run_workflow, run_birthdays_workflow, load_birthdays, birthdays_for_date
+from services.worker.main import load_config, run_workflow, run_birthdays_workflow, load_birthdays, birthdays_for_date, parse_birthday
 from services.worker.main import should_run_now, resolve_driver_class
 
 
@@ -73,7 +73,7 @@ def test_run_workflow_can_use_desktop_driver_in_dry_run_mode():
 
 def test_load_birthdays_reads_csv_rows(tmp_path):
     data_file = tmp_path / "birthdays.csv"
-    data_file.write_text("name,recipient,birthday,message\nAlice,alice,2026-06-30,Happy Birthday!\n")
+    data_file.write_text("name,recipient,birthday,message\nAlice,alice,06-30,Happy Birthday!\n")
 
     rows = load_birthdays(data_file)
 
@@ -84,8 +84,8 @@ def test_load_birthdays_reads_csv_rows(tmp_path):
 
 def test_birthdays_for_date_picks_today():
     rows = [
-        {"name": "Alice", "recipient": "alice", "birthday": "1988-06-30", "message": "Happy Birthday!"},
-        {"name": "Bob", "recipient": "bob", "birthday": "1990-07-01", "message": "Hi Bob"},
+        {"name": "Alice", "recipient": "alice", "birthday": "06-30", "message": "Happy Birthday!"},
+        {"name": "Bob", "recipient": "bob", "birthday": "07-01", "message": "Hi Bob"},
     ]
 
     matches = birthdays_for_date(rows, today=date(2026, 6, 30))
@@ -94,9 +94,15 @@ def test_birthdays_for_date_picks_today():
     assert matches[0]["name"] == "Alice"
 
 
+def test_parse_birthday_supports_month_day_formats():
+    assert parse_birthday("06-30") == date(1900, 6, 30)
+    assert parse_birthday("06/30") == date(1900, 6, 30)
+    assert parse_birthday("30.06") == date(1900, 6, 30)
+
+
 def test_run_birthdays_workflow_returns_matches(tmp_path):
     data_file = tmp_path / "birthdays.csv"
-    data_file.write_text("name,recipient,birthday,message\nAlice,alice,2026-06-30,Happy Birthday!\n")
+    data_file.write_text("name,recipient,birthday,message\nAlice,alice,06-30,Happy Birthday!\n")
 
     config_path = ROOT / "config" / "config.yml"
     config = load_config(config_path)
