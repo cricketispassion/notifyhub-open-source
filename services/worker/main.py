@@ -45,6 +45,20 @@ def _load_whatsapp_driver_class() -> type[Any]:
 WhatsAppPlaywrightDriver = _load_whatsapp_driver_class()
 
 
+def _load_cloud_driver_class() -> type[Any]:
+    module_path = ROOT / "drivers" / "whatsapp-cloud" / "driver.py"
+    spec = importlib.util.spec_from_file_location("notifyhub_whatsapp_cloud_driver", module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load WhatsApp Cloud driver from {module_path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.WhatsAppCloudDriver
+
+
+WhatsAppCloudDriver = _load_cloud_driver_class()
+
+
 def parse_birthday(value: str | None) -> date | None:
     if not value:
         return None
@@ -140,6 +154,8 @@ def run_birthdays_workflow(
 def resolve_driver_class(driver_type: str | None = None) -> type[Any]:
     if driver_type == "whatsapp-desktop":
         return WhatsAppDesktopDriver
+    if driver_type == "whatsapp-cloud":
+        return WhatsAppCloudDriver
     return WhatsAppPlaywrightDriver
 
 
@@ -207,7 +223,12 @@ def main() -> None:
     parser.add_argument("--message", default=None)
     parser.add_argument("--schedule", action="store_true", help="Run only if current time matches send_time")
     parser.add_argument("--live", action="store_true", help="Attempt a real WhatsApp send instead of dry run")
-    parser.add_argument("--driver", default="whatsapp-playwright", choices=["whatsapp-playwright", "whatsapp-desktop"], help="Choose the WhatsApp driver")
+    parser.add_argument(
+        "--driver",
+        default="whatsapp-playwright",
+        choices=["whatsapp-playwright", "whatsapp-desktop", "whatsapp-cloud"],
+        help="Choose the WhatsApp driver",
+    )
     parser.add_argument("--birthdays", default=None, help="Path to a CSV file containing birthday rows")
     args = parser.parse_args()
 
