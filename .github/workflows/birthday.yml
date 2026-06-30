@@ -2,7 +2,7 @@ name: Birthday Scheduler
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 5 * * *'
 jobs:
   run-worker:
     runs-on: ubuntu-latest
