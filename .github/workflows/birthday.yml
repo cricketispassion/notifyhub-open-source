@@ -13,4 +13,17 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements.txt
-      - run: python services/worker/main.py --birthdays data/birthdays.csv --driver whatsapp-playwright --schedule
+      - name: Restore Playwright profile cache
+        uses: actions/cache@v4
+        with:
+          path: drivers/whatsapp-playwright/profile
+          key: playwright-profile-${{ runner.os }}-v1
+          restore-keys: |
+            playwright-profile-${{ runner.os }}-
+      - name: Install Playwright browsers
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps
+      - name: Run worker (Playwright)
+        run: |
+          python services/worker/main.py --birthdays data/birthdays.csv --driver whatsapp-playwright --schedule --live

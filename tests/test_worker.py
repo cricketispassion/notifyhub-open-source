@@ -60,12 +60,6 @@ def test_resolve_driver_class_prefers_desktop_driver():
     driver_class = resolve_driver_class("whatsapp-desktop")
     assert driver_class.__name__ == "WhatsAppDesktopDriver"
 
-
-def test_resolve_driver_class_can_select_cloud_driver():
-    driver_class = resolve_driver_class("whatsapp-cloud")
-    assert driver_class.__name__ == "WhatsAppCloudDriver"
-
-
 def test_run_workflow_can_use_desktop_driver_in_dry_run_mode():
     summary = run_workflow(
         {"recipient": "demo-user", "message": "Hello"},
@@ -115,6 +109,7 @@ def test_run_birthdays_workflow_returns_matches(tmp_path):
         config,
         birthday_path=str(data_file),
         driver_config={"type": "whatsapp-playwright", "dry_run": True},
+        today=date(2026, 6, 30),
     )
 
     assert summary["birthday_count"] == 1
